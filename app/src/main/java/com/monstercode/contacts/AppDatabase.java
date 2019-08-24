@@ -5,6 +5,13 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+
+/**
+ *   The database class for the app. Creates it and gives an
+ *   instance of it for its manipulation and access
+ */
+
+
 class AppDatabase extends SQLiteOpenHelper {
     public static final String TAG = "AppDatabase";
     public static final String DATABASE_NAME = "contacts.db";
@@ -18,6 +25,7 @@ class AppDatabase extends SQLiteOpenHelper {
     }
 
     /**
+     *
      * Get an instance of the app's singleton database helper object
      * @param context the content provider's context
      * @return a SQLite database helper object

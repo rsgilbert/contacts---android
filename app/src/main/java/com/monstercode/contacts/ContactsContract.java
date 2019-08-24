@@ -1,5 +1,12 @@
 package com.monstercode.contacts;
 
+
+
+/**
+ *  Structure of the database, includes definitions for the column fields
+ *  and the unique identifiers for records and the table as a whole
+ */
+
 import android.content.ContentUris;
 import android.net.Uri;
 import android.provider.BaseColumns;

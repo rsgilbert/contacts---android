@@ -11,8 +11,10 @@ import android.util.Log;
 
 
 /**
- * Provider for the Contacts app. This is the only class that knows about {@link AppDatabase}
+ * Content Provider for the Contacts app. This is the only class that knows about {@link AppDatabase}
+ * The Content Provider is used by the ContentResolver in the MainActivity to make manipulations on the database
  */
+
 public class AppProvider extends ContentProvider {
     private static final String TAG = "AppProvider";
     private AppDatabase mOpenHelper;
