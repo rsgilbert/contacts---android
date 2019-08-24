@@ -4,6 +4,9 @@ import android.content.ContentUris;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
+import static com.monstercode.contacts.AppProvider.CONTENT_AUTHORITY_URI;
+import static com.monstercode.contacts.AppProvider.CONTENT_AUTHORITY;
+
 public class ContactsContract {
     static final String TABLE_NAME = "contacts";
 
@@ -22,7 +25,7 @@ public class ContactsContract {
     }
 
     // uri to access Contacts
-    public static final Uri CONTE_URI = Uri.withAppendedPath(CONTENT_AUTHORITY_URI, TABLE_NAME);
+    public static final Uri CONTENT_URI = Uri.withAppendedPath(CONTENT_AUTHORITY_URI, TABLE_NAME);
 
     static final String CONTENT_TYPE = "vmd.android.cursor.dir/vnd." + CONTENT_AUTHORITY + "." + TABLE_NAME;
     static final String CONTENT_ITEM_TYPE = "vmd.android.cursor.item/vnd" + CONTENT_AUTHORITY + "." + TABLE_NAME;
@@ -32,6 +35,6 @@ public class ContactsContract {
         return ContentUris.withAppendedId(CONTENT_URI, contactId);
     }
 
-    static long getTaskId (Uri uri) { return ContentUris.parseId(uri); }
+    static long getContactId (Uri uri) { return ContentUris.parseId(uri); }
 }
 
