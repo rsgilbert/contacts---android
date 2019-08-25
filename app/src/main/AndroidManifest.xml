@@ -17,6 +17,10 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".InfoActivity">
+
+        </activity>
+
         <provider
             android:authorities="com.monstercode.contacts.provider"
             android:name="com.monstercode.contacts.AppProvider"
