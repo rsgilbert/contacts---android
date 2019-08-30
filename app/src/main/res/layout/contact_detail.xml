@@ -11,6 +11,6 @@
         android:text="my text view"
         android:textSize="20dp"
         android:id="@+id/contact_item"
-        android:textColor="#000"/>
+        android:textColor="#fff"/>
 
 </LinearLayout>

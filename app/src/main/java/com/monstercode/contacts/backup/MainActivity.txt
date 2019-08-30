@@ -1,0 +1,110 @@
+package com.monstercode.contacts;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.ContentResolver;
+import android.content.ContentValues;
+import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class MainActivity extends AppCompatActivity {
+    public ListView contacts_listview;
+    public static final String TAG = "mainactivity";
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+        Log.d(TAG, "onoptionsitemselected, id is " + id);
+
+        if(id == R.id.menu_search) {
+            Log.d(TAG, "Starting the searchOption, id was " + R.id.menu_search + " also " + R.id.contacts_listview);
+            Toast.makeText(this, "Starting the searchOption, id was " + R.id.menu_search, Toast.LENGTH_SHORT).show();
+            onSearchRequested();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        setDefaultKeyMode(DEFAULT_KEYS_SEARCH_LOCAL);
+
+        contacts_listview = findViewById(R.id.contacts_listview);
+
+        String[] projection = {
+                ContactsContract.Columns._ID,
+                ContactsContract.Columns.CONTACTS_NAME,
+                ContactsContract.Columns.CONTACTS_CONTACT,
+                ContactsContract.Columns.CONTACTS_POSITION,
+                ContactsContract.Columns.CONTACTS_MINISTRY
+        };
+
+        ContentResolver contentResolver = getContentResolver();
+
+
+        // manipulating appDb
+//        ContentValues contentValues = new ContentValues();
+//        contentValues.put(ContactsContract.Columns.CONTACTS_NAME, "Joel");
+//        contentValues.put(ContactsContract.Columns.CONTACTS_CONTACT, "6545343");
+//        contentValues.put(ContactsContract.Columns.CONTACTS_POSITION, "mp");
+//        contentValues.put(ContactsContract.Columns.CONTACTS_MINISTRY, "Ministry of Internal Affairs");
+//        contentResolver.insert(ContactsContract.CONTENT_URI, contentValues);
+
+
+        Cursor cursor = contentResolver.query(ContactsContract.CONTENT_URI,
+                projection,
+                null,
+                null,
+                ContactsContract.Columns.CONTACTS_NAME);
+
+        if (cursor != null) {
+            final List<String> contact_names = new ArrayList<>();
+            final List<Integer> contact_ids = new ArrayList<>();
+            while (cursor.moveToNext()) {
+                contact_names.add(cursor.getString(cursor.getColumnIndex(ContactsContract.Columns.CONTACTS_NAME)));
+                contact_ids.add(cursor.getInt(cursor.getColumnIndex(ContactsContract.Columns._ID)));
+            }
+            cursor.close();
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(MainActivity.this, R.layout.contact_detail, R.id.contact_item, contact_names);
+            contacts_listview.setAdapter(adapter);
+            contacts_listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    int _id =  contact_ids.get(i);
+                    Log.d(TAG, "contactlist item id: " + _id);
+                    Uri uri = ContactsContract.buildContactUri(_id);
+                    Log.d(TAG, "New uri is " + uri);
+                    Intent intent = new Intent(MainActivity.this, InfoActivity.class);
+                    intent.setData(uri);
+                    startActivity(intent);
+                }
+            });
+        }
+    }
+}
+
+// \
