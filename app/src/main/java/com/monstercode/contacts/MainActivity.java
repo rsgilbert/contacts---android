@@ -46,7 +46,9 @@ public class MainActivity extends AppCompatActivity {
           ContactsContract.Columns.CONTACTS_NAME,
           ContactsContract.Columns.CONTACTS_CONTACT
         };
-//        String selection = ContactsContract.Columns.CONTACTS_NAME + " LIKE 'mu%'";
+
+        String[] args = {"se"};
+        String selection = ContactsContract.Columns.CONTACTS_NAME + " LIKE ?";
         Cursor cursor = getContentResolver().query(ContactsContract.CONTENT_URI,
                 null,
                 null,
@@ -63,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
                 );
 
         contacts_listview.setAdapter(adapter);
+
 
     }
 
@@ -81,14 +84,3 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 }
-
-
-
-    // get the SearchView and set searchable configuration
-//    SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-//    SearchView searchView = (SearchView) menu.findItem(R.id.menu_search).getActionView();
-//
-//// current activity is the searchable activity
-//        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-//                searchView.setIconifiedByDefault(true); // expand the widget by default
-//                searchView.setSubmitButtonEnabled(true);

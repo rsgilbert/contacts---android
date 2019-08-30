@@ -16,6 +16,7 @@ import static com.monstercode.contacts.AppProvider.CONTENT_AUTHORITY;
 
 public class ContactsContract {
     static final String TABLE_NAME = "contacts";
+    static final String VIRTUAL_TABLE_NAME = "contacts_virtual";
 
     // contacts fields
     public static class Columns {

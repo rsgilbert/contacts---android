@@ -15,12 +15,12 @@ import android.util.Log;
 class AppDatabase extends SQLiteOpenHelper {
     public static final String TAG = "AppDatabase";
     public static final String DATABASE_NAME = "contacts.db";
-    public static final int DATABSE_VERSION = 1;
+    public static final int DATABASE_VERSION = 1;
 
     private static AppDatabase instance = null;
 
     private AppDatabase(Context context) { // only one instance of db at time hence private
-        super(context, DATABASE_NAME, null, DATABSE_VERSION);
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
 
     }
 
@@ -32,6 +32,7 @@ class AppDatabase extends SQLiteOpenHelper {
      */
 
     static AppDatabase getInstance(Context context) {
+
         if (instance == null) {
             Log.d(TAG, "getinstance creating a new instance");
             instance = new AppDatabase(context);
@@ -43,6 +44,9 @@ class AppDatabase extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         String sql;
+//        sql = "DROP TABLE contacts";
+//        sqLiteDatabase.execSQL(sql);
+
         sql = "CREATE TABLE " + ContactsContract.TABLE_NAME + " ("
         + ContactsContract.Columns._ID + " INTEGER PRIMARY KEY, "
         + ContactsContract.Columns.CONTACTS_NAME + " TEXT NOT NULL, "
@@ -51,6 +55,10 @@ class AppDatabase extends SQLiteOpenHelper {
         + ContactsContract.Columns.CONTACTS_PICTURE + " TEXT, "
         + ContactsContract.Columns.CONTACTS_POSITION + " TEXT);";
         sqLiteDatabase.execSQL(sql);
+
+//        sql = "CREATE VIRTUAL TABLE " + ContactsContract.VIRTUAL_TABLE_NAME +
+//                " USING " + ContactsContract.TABLE_NAME + "(name, contact, ministry, position);";
+//        sqLiteDatabase.execSQL(sql);
     }
 
     @Override

@@ -16,6 +16,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -52,6 +53,16 @@ public class SearchableActivity extends AppCompatActivity {
             );
             contacts_listview.setAdapter(adapter);
         }
+        // handling suggestions
+        else if (Intent.ACTION_VIEW.equals(intent.getAction())) {
+            String selected_id = intent.getDataString();
+            Log.d(TAG, "data string is " + selected_id);
+            Uri uri = ContactsContract.buildContactUri(Integer.parseInt(selected_id));
+            Intent i = new Intent(SearchableActivity.this, InfoActivity.class);
+            i.setData(uri);
+            startActivity(i);
+
+        }
     }
 
 
@@ -71,16 +82,16 @@ public class SearchableActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
     public Cursor getMatches(String query) {
-        String selection = ContactsContract.Columns.CONTACTS_NAME + " LIKE ?";
-//                + ContactsContract.Columns.CONTACTS_CONTACT + " MATCH ?OR"
-//                + ContactsContract.Columns.CONTACTS_POSITION + " MATCH ? OR"
-//                + ContactsContract.Columns.CONTACTS_MINISTRY + " MATCH ?;";
+        String selection = ContactsContract.Columns.CONTACTS_NAME + " LIKE ? OR "
+                + ContactsContract.Columns.CONTACTS_CONTACT + " LIKE ? "
+                + ContactsContract.Columns.CONTACTS_POSITION + " MATCH ? OR "
+                + ContactsContract.Columns.CONTACTS_MINISTRY + " MATCH ?";
 
 
         return getContentResolver().query(ContactsContract.CONTENT_URI,
                 null,
                 selection,
-                new String[]{"%" + query + "%"},
+                    new String[]{ query },
                 ContactsContract.Columns.CONTACTS_NAME);
     }
 }

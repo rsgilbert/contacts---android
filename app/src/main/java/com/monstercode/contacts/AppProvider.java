@@ -1,12 +1,15 @@
 package com.monstercode.contacts;
 
+import android.app.SearchManager;
 import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
+import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
+import android.provider.BaseColumns;
 import android.util.Log;
 
 
@@ -21,6 +24,7 @@ public class AppProvider extends ContentProvider {
     public static final UriMatcher sUriMatcher = buildUriMatcher();
     private static final int CONTACTS = 100;
     private static final int CONTACTS_ID = 101;
+    private static final int SEARCH = 200;
 
 
     static final String CONTENT_AUTHORITY = "com.monstercode.contacts.provider";
@@ -39,6 +43,8 @@ public class AppProvider extends ContentProvider {
         // eg content://com.monstercode.contacts.provider/contacts
         matcher.addURI(CONTENT_AUTHORITY, ContactsContract.TABLE_NAME, CONTACTS);
 
+        matcher.addURI(CONTENT_AUTHORITY, "search_suggest_query", SEARCH);
+
         return matcher;
     }
 
@@ -56,6 +62,12 @@ public class AppProvider extends ContentProvider {
         final int match = sUriMatcher.match(uri); // tells us what uri was passed into query
 
         SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
+
+        if (selectionArgs != null && selectionArgs.length == 1){
+            String arg1 = "%" + selectionArgs[0] + "%";
+            selectionArgs = new String[]{arg1};
+        }
+
         switch(match) {
             case CONTACTS:
                 queryBuilder.setTables(ContactsContract.TABLE_NAME);
@@ -65,9 +77,25 @@ public class AppProvider extends ContentProvider {
                 long contactId = ContactsContract.getContactId(uri);
                 queryBuilder.appendWhere(ContactsContract.Columns._ID + " = " + contactId);
                 break;
+            case SEARCH:
+                queryBuilder.setTables(ContactsContract.TABLE_NAME);
             default:
-                throw new IllegalArgumentException("Unknown uri " + uri);
+                queryBuilder.setTables(ContactsContract.TABLE_NAME);
+                SQLiteDatabase sqLiteDatabase = mOpenHelper.getReadableDatabase();
+                String query = "%" + uri.getLastPathSegment().toLowerCase() + "%";
+                selection = "name LIKE ? OR contact LIKE ? OR ministry LIKE ? OR position LIKE ?";
+                selectionArgs = new String[] {query, query, query, query};
+                Cursor dbCursor = queryBuilder.query(sqLiteDatabase, new String[] {"_id", "name"}, selection, selectionArgs, null, null, sortOrder);
+                MatrixCursor matrixCursor = new MatrixCursor(new String[] {BaseColumns._ID, SearchManager.SUGGEST_COLUMN_TEXT_1, SearchManager.SUGGEST_COLUMN_INTENT_DATA}, 20);
+                while(dbCursor.moveToNext()) {
+                    matrixCursor.addRow(new String[] {dbCursor.getString(0),  dbCursor.getString(1), dbCursor.getString(0)});
+                }
+                return matrixCursor;
+//                throw new IllegalArgumentException("Unknown uri " + uri);
         }
+
+
+
         SQLiteDatabase sqLiteDatabase = mOpenHelper.getReadableDatabase();
         return queryBuilder.query(sqLiteDatabase, projection, selection, selectionArgs, null, null, sortOrder);
     }
